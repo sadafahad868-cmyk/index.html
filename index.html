@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Your Vibe ✨</title>
+    <style>
+        /* --- CSS STYLING (Same as before) --- */
+        :root {
+            --bg-color: #050505;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .bg-blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(45deg, #ff00cc, #3333ff);
+            filter: blur(100px);
+            opacity: 0.4;
+            border-radius: 50%;
+            animation: float 10s infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            100% {
+                transform: translate(50%, 50%) scale(1.2);
+            }
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: #ccc;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #444;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+        }
+
+        button.btn-main {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button.btn-main:hover {
+            transform: scale(1.02);
+        }
+
+        button.btn-main:active {
+            transform: scale(0.98);
+        }
+
+        #resultCanvas {
+            display: none;
+        }
+
+        #resultArea {
+            display: none;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .preview-img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+
+        .btn-download {
+            background: white;
+            color: black;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-download:hover {
+            background: #eee;
+        }
+
+        .btn-back {
+            background: transparent;
+            color: #888;
+            border: none;
+            margin-top: 15px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-blob"></div>
+
+    <div class="container">
+        <h1>Vibe Check</h1>
+        <p class="subtitle">Apna personality type aur aesthetic discover karein.</p>
+
+        <!-- Input Section -->
+        <div class="card" id="inputCard">
+            <div class="input-group">
+                <label>Your Name</label>
+                <input type="text" id="userName" placeholder="e.g. Rahul">
+            </div>
+
+            <div class="input-group">
+                <label>Current Mood</label>
+                <select id="userMood">
+                    <option value="happy">Happy & Energetic ☀️</option>
+                    <option value="chill">Chill & Relaxed ☕</option>
+                    <option value="mysterious">Mysterious & Dark 🌑</option>
+                    <option value="romantic">Romantic & Soft 🌸</option>
+                    <option value="bold">Bold & Powerful 🔥</option>
+                </select>
+            </div>
+
+            <button class="btn-main" id="generateBtn" onclick="generateVibe()">Generate My Card</button>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultArea">
+            <img id="finalImage" class="preview-img" alt="Vibe Card">
+
+            <button class="btn-download" onclick="downloadCard()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download Card
+            </button>
+
+            <button class="btn-back" onclick="resetApp()">Create Another</button>
+        </div>
+    </div>
+
+    <!-- Hidden Canvas -->
+    <canvas id="resultCanvas" width="800" height="1200"></canvas>
+
+    <script>
+        // Data for randomization
+        const adjectives = {
+            happy: ["Radiant", "Golden", "Joyful", "Sparkling"],
+            chill: ["Zen", "Oceanic", "Serenity", "Breeze"],
+            mysterious: ["Shadow", "Eclipse", "Enigma", "Void"],
+            romantic: ["Velvet", "Blush", "Heart", "Rose"],
+            bold: ["Titan", "Inferno", "Storm", "Royal"]
+        };
+
+        const colors = {
+            happy: ["#FFD700", "#FF8C00", "#FF4500"],
+            chill: ["#00CED1", "#20B2AA", "#48D1CC"],
+            mysterious: ["#2F4F4F", "#191970", "#4B0082"],
+            romantic: ["#FF69B4", "#FFB6C1", "#DB7093"],
+            bold: ["#DC143C", "#B22222", "#FF4500"]
+        };
+
+        const quotes = [
+            "Your energy lights up the room.",
+            "Destiny is waiting for your move.",
+            "You are stronger than you know.",
+            "Chaos is just a ladder to success.",
+            "Keep shining, the world needs your light."
+        ];
+
+        function generateVibe() {
+            const btn = document.getElementById('generateBtn');
+            const name = document.getElementById('userName').value.trim();
+            const mood = document.getElementById('userMood').value;
+
+            // 1. Validation
+            if (!name) {
+                alert("Please enter your name first!");
+                return;
+            }
+
+            // 2. Button Feedback (Loading state)
+            btn.innerText = "Generating...";
+            btn.disabled = true;
+
+            try {
+                // 3. Logic to pick content
+                const adjList = adjectives[mood];
+                const colorList = colors[mood];
+
+                const hash = name.split("").reduce((a, b) => a + b.charCodeAt(0), 0);
+                const selectedAdj = adjList[hash % adjList.length];
+                const selectedQuote = quotes[hash % quotes.length];
+
+                const color1 = colorList[hash % colorList.length];
+                const color2 = colorList[(hash + 1) % colorList.length];
+
+                // 4. Draw on Canvas (Fixed Section)
+                const canvas = document.getElementById('resultCanvas');
+                const ctx = canvas.getContext('2d');
+
+                // Clear Canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Background Gradient
+                const grd = ctx.createLinearGradient(0, 0, 800, 1200);
+                grd.addColorStop(0, color1);
+                grd.addColorStop(1, color2);
+                ctx.fillStyle = grd;
+                ctx.fillRect(0, 0, 800, 1200);
+
+                // Decorative Circle
+                ctx.beginPath();
+                ctx.arc(400, 300, 200, 0, 2 * Math.PI);
+                ctx.fillStyle = "rgba(255,255,255,0.1)";
+                ctx.fill();
+
+                // Text Styles
+                ctx.fillStyle = "#ffffff";
+                ctx.textAlign = "center";
+
+                // Name
+                ctx.font = "bold 80px Arial";
+                ctx.fillText(name.toUpperCase(), 400, 500);
+
+                // Vibe Title
+                ctx.font = "italic 50px Arial";
+                ctx.fillStyle = "rgba(255,255,255,0.9)";
+                ctx.fillText(`THE ${selectedAdj} ONE`, 400, 600);
+
+                // Quote Box (Fixed: Used standard fillRect instead of roundRect)
+                ctx.fillStyle = "rgba(0,0,0,0.2)";
+                ctx.fillRect(100, 750, 600, 300);
+
+                // Quote Text
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "40px Arial";
+                ctx.fillText(`"${selectedQuote}"`, 400, 920);
+
+                // Branding
+                ctx.font = "30px Arial";
+                ctx.fillStyle = "rgba(255,255,255,0.7)";
+                ctx.fillText("Check your vibe at [YourWebsite.com]", 400, 1150);
+
+                // 5. Convert to Image
+                const dataURL = canvas.toDataURL("image/jpeg");
+                const img = document.getElementById('finalImage');
+
+                // Wait for image to load logic (simple timeout ensures render)
+                img.onload = function () {
+                    document.getElementById('inputCard').style.display = 'none';
+                    document.getElementById('resultArea').style.display = 'block';
+                    btn.innerText = "Generate My Card";
+                    btn.disabled = false;
+                };
+
+                img.src = dataURL;
+
+            } catch (error) {
+                console.error(error);
+                alert("Something went wrong: " + error.message);
+                btn.innerText = "Generate My Card";
+                btn.disabled = false;
+            }
+        }
+
+        function downloadCard() {
+            const link = document.createElement('a');
+            link.download = 'my-vibe-card.jpg';
+            link.href = document.getElementById('resultCanvas').toDataURL();
+            link.click();
+        }
+
+        function resetApp() {
+            document.getElementById('userName').value = "";
+            document.getElementById('inputCard').style.display = 'block';
+            document.getElementById('resultArea').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
